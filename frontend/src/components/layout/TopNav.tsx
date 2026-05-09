@@ -14,6 +14,7 @@ const navLinks = [
   { href: "/app/dashboard", label: "Dashboard" },
   { href: "/app/new", label: "New Request" },
   { href: "/app/history", label: "History" },
+  { href: "/app/about", label: "About Me" },
   { href: "/app/settings", label: "Settings" },
 ];
 
@@ -33,7 +34,7 @@ export function TopNav() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="fixed top-0 z-50 w-full border-b border-gray-200 bg-white/90 backdrop-blur-xl dark:border-white/5 dark:bg-[#212121]/90"
+      className="fixed top-0 z-50 w-full border-b border-white/60 bg-white/70 backdrop-blur-xl"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Logo */}
@@ -53,8 +54,8 @@ export function TopNav() {
                   variant="ghost"
                   size="sm"
                   className={cn(
-                    "relative text-sm text-[#424242] dark:text-gray-300",
-                    isActive && "text-[#1B5E20] dark:text-[#4CAF50]"
+                    "relative text-sm text-slate-600",
+                    isActive && "text-[#1B5E20]"
                   )}
                 >
                   {link.label}
@@ -85,7 +86,7 @@ export function TopNav() {
           </Button>
 
           <Link href="/app/new" className="hidden md:block">
-            <Button size="sm" className="bg-[#4CAF50] text-white hover:bg-[#1B5E20]">
+            <Button size="sm" className="bg-[#4CAF50] text-white hover:bg-[#43A047]">
               <Sparkles className="mr-1.5 h-3.5 w-3.5" />
               New Request
             </Button>
@@ -118,7 +119,7 @@ export function TopNav() {
                   </Link>
                 ))}
                 <Link href="/app/new" className="mt-4">
-                  <Button className="w-full bg-[#4CAF50] text-white hover:bg-[#1B5E20]">
+                  <Button className="w-full bg-[#4CAF50] text-white hover:bg-[#43A047]">
                     <Sparkles className="mr-1.5 h-3.5 w-3.5" />
                     New Request
                   </Button>

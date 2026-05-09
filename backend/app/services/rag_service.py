@@ -25,10 +25,10 @@ def retrieve_documents(
 
     sql = text("""
         SELECT id, content, metadata,
-               1 - (embedding <=> :query_emb::vector) AS similarity
+               1 - (embedding <=> CAST(:query_emb AS vector)) AS similarity
         FROM rag_documents
         WHERE embedding IS NOT NULL
-        ORDER BY embedding <=> :query_emb::vector
+        ORDER BY embedding <=> CAST(:query_emb AS vector)
         LIMIT :top_k
     """)
 

@@ -41,12 +41,22 @@ export default function LoginPage() {
     try {
       const response = await authAPI.login(data.email, data.password);
       const { token, user } = response.data;
+      console.info("[login] success — token len:", token?.length, "user:", user);
       setToken(token);
       setUser(user);
       toast.success("Welcome back!");
-      router.push("/app/dashboard");
+      // Full reload instead of router.push so the dashboard renders against the
+      // persisted localStorage token without any hydration race window.
+      if (typeof window !== "undefined") {
+        window.location.assign("/app/dashboard");
+      } else {
+        router.push("/app/dashboard");
+      }
     } catch (error: any) {
-      toast.error(error.response?.data?.detail || "Login failed. Is the backend running?");
+      const detail = error?.response?.data?.detail;
+      const status = error?.response?.status;
+      console.error("[login] failed", { status, detail, error });
+      toast.error(detail || `Login failed${status ? ` (${status})` : ""}. Is the backend running?`);
     } finally {
       setLoading(false);
     }

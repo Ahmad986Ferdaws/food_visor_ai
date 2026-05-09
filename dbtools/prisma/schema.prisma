@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model agent_outputs {
+  id                      String                  @id @db.Uuid
+  request_id              String                  @db.Uuid
+  agent_number            Int
+  output                  Json
+  tokens_used             Int?
+  latency_ms              Int?
+  created_at              DateTime?               @db.Timestamptz(6)
+  recommendation_requests recommendation_requests @relation(fields: [request_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model alembic_version {
+  version_num String @id(map: "alembic_version_pkc") @db.VarChar(32)
+}
+
+model feedback {
+  id                      String                  @id @db.Uuid
+  request_id              String                  @db.Uuid
+  user_id                 String                  @db.Uuid
+  rating                  Int
+  liked_items             Json?
+  disliked_items          Json?
+  created_at              DateTime?               @db.Timestamptz(6)
+  recommendation_requests recommendation_requests @relation(fields: [request_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                   users                   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model meal_logs {
+  id         String    @id @db.Uuid
+  user_id    String    @db.Uuid
+  meal_name  String    @db.VarChar(255)
+  meal_type  String?   @db.VarChar(32)
+  calories   Int?
+  protein_g  Float?
+  carbs_g    Float?
+  fat_g      Float?
+  sugar_g    Float?
+  eaten_at   DateTime  @db.Timestamptz(6)
+  source     String?   @db.VarChar(32)
+  extra      Json?
+  created_at DateTime? @db.Timestamptz(6)
+  users      users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([eaten_at], map: "ix_meal_logs_eaten_at")
+  @@index([user_id, eaten_at], map: "ix_meal_logs_user_eaten")
+  @@index([user_id], map: "ix_meal_logs_user_id")
+}
+
+model rag_documents {
+  id         String                 @id @db.Uuid
+  content    String
+  metadata   Json
+  created_at DateTime?              @db.Timestamptz(6)
+  embedding  Unsupported("vector")?
+}
+
+model recommendation_requests {
+  id               String          @id @db.Uuid
+  user_id          String          @db.Uuid
+  message          String
+  status           request_status
+  sensitive_mode   Boolean?
+  context_override Json?
+  error_message    String?
+  created_at       DateTime?       @db.Timestamptz(6)
+  completed_at     DateTime?       @db.Timestamptz(6)
+  agent_outputs    agent_outputs[]
+  feedback         feedback[]
+  users            users           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model user_preferences {
+  user_id             String    @id @db.Uuid
+  dietary_constraints Json?
+  allergies           Json?
+  goals               Json?
+  liked_items         Json?
+  disliked_items      Json?
+  created_at          DateTime? @db.Timestamptz(6)
+  updated_at          DateTime? @db.Timestamptz(6)
+  daily_limits        Json?     @default("{}")
+  display_name        String?   @db.VarChar(255)
+  medical_conditions  Json?     @default("[]")
+  users               users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model user_tracks {
+  id          String    @id @db.Uuid
+  user_id     String    @db.Uuid
+  track_type  String    @db.VarChar(50)
+  metrics     Json
+  recorded_at DateTime? @db.Timestamptz(6)
+  created_at  DateTime? @db.Timestamptz(6)
+  users       users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model users {
+  id                      String                    @id @db.Uuid
+  email                   String                    @unique(map: "ix_users_email") @db.VarChar(255)
+  password_hash           String                    @db.VarChar(255)
+  email_verified          Boolean?
+  created_at              DateTime?                 @db.Timestamptz(6)
+  updated_at              DateTime?                 @db.Timestamptz(6)
+  feedback                feedback[]
+  meal_logs               meal_logs[]
+  recommendation_requests recommendation_requests[]
+  user_preferences        user_preferences?
+  user_tracks             user_tracks[]
+}
+
+enum request_status {
+  QUEUED
+  RUNNING_AGENT1
+  RUNNING_AGENT2
+  RUNNING_AGENT3
+  COMPLETED
+  FAILED
+}

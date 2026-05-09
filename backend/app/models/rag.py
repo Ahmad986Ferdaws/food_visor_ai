@@ -14,5 +14,5 @@ class RAGDocument(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     content = Column(Text, nullable=False)
     metadata_ = Column("metadata", JSONB, nullable=False)  # {source, category, tags, nutrition}
-    embedding = Column(Vector(1024))  # NeMo Retriever 300M v2 dimension
+    embedding = Column(Vector(1536))  # OpenAI text-embedding-3-small dimension
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

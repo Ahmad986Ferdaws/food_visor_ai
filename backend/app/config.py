@@ -22,19 +22,26 @@ class Settings(BaseSettings):
     # CORS
     FRONTEND_URL: str = "http://localhost:3000"
 
-    # Agents
+    # Agent 1 — Context Builder (Anthropic)
     AGENT1_MODEL_PROVIDER: str = "anthropic"
+    AGENT1_MODEL_NAME: str = "claude-sonnet-4-6"
     AGENT1_API_KEY: str = ""
-    AGENT2_MODEL_PROVIDER: str = "anthropic"
+
+    # Agent 2 — Recommender (OpenAI)
+    AGENT2_MODEL_PROVIDER: str = "openai"
+    AGENT2_MODEL_NAME: str = "gpt-5.4"
     AGENT2_API_KEY: str = ""
+
+    # Agent 3 — Validator (Anthropic)
     AGENT3_MODEL_PROVIDER: str = "anthropic"
+    AGENT3_MODEL_NAME: str = "claude-sonnet-4-6"
     AGENT3_API_KEY: str = ""
 
-    # Embedding
-    EMBEDDING_MODEL_PROVIDER: str = "nvidia"
+    # Embeddings (OpenAI)
+    EMBEDDING_MODEL_PROVIDER: str = "openai"
+    EMBEDDING_MODEL_NAME: str = "text-embedding-3-small"
     EMBEDDING_API_KEY: str = ""
-    EMBEDDING_MODEL_NAME: str = "nvidia/nv-embed-v2"
-    EMBEDDING_DIMENSION: int = 1024
+    EMBEDDING_DIMENSION: int = 1536
 
     # RAG
     RAG_TOP_K: int = 5

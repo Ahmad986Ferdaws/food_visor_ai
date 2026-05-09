@@ -84,17 +84,28 @@ function Tagline2({ scrollYProgress }: NarrativeOverlayProps) {
     [0.16, 0.2, 0.27, 0.31],
     [0, 1, 1, 0],
   );
+  const dim = useTransform(
+    scrollYProgress,
+    [0.16, 0.2, 0.27, 0.31],
+    [0, 0.45, 0.45, 0],
+  );
   const y = useTransform(scrollYProgress, [0.16, 0.31], [40, -40]);
   return (
-    <motion.div
-      style={{ opacity, y }}
-      className="absolute inset-0 flex items-center justify-center px-6 pointer-events-none"
-    >
-      <h2 className="text-4xl md:text-6xl font-semibold text-center text-gray-900 dark:text-white max-w-5xl tracking-tight drop-shadow-[0_2px_24px_rgba(255,255,255,0.35)]">
-        Your nutrition,
-        <span className="text-[#4CAF50]"> intelligently personalized.</span>
-      </h2>
-    </motion.div>
+    <>
+      <motion.div
+        style={{ opacity: dim }}
+        className="absolute inset-0 bg-black pointer-events-none"
+      />
+      <motion.div
+        style={{ opacity, y }}
+        className="absolute inset-0 flex items-center justify-center px-6 pointer-events-none"
+      >
+        <h2 className="text-4xl md:text-6xl font-semibold text-center text-white max-w-5xl tracking-tight drop-shadow-[0_2px_24px_rgba(0,0,0,0.6)]">
+          Your nutrition,
+          <span className="text-[#4CAF50]"> intelligently personalized.</span>
+        </h2>
+      </motion.div>
+    </>
   );
 }
 
@@ -104,18 +115,29 @@ function Tagline3({ scrollYProgress }: NarrativeOverlayProps) {
     [0.31, 0.35, 0.4, 0.44],
     [0, 1, 1, 0],
   );
+  const dim = useTransform(
+    scrollYProgress,
+    [0.31, 0.35, 0.4, 0.44],
+    [0, 0.45, 0.45, 0],
+  );
   const y = useTransform(scrollYProgress, [0.31, 0.44], [40, -40]);
   return (
-    <motion.div
-      style={{ opacity, y }}
-      className="absolute inset-0 flex items-center justify-center px-6 pointer-events-none"
-    >
-      <h2 className="text-5xl md:text-7xl font-bold text-center tracking-tight">
-        <span className="text-gray-900 dark:text-white">Three agents.</span>
-        <br />
-        <span className="text-[#4CAF50]">One perfect meal.</span>
-      </h2>
-    </motion.div>
+    <>
+      <motion.div
+        style={{ opacity: dim }}
+        className="absolute inset-0 bg-black pointer-events-none"
+      />
+      <motion.div
+        style={{ opacity, y }}
+        className="absolute inset-0 flex items-center justify-center px-6 pointer-events-none"
+      >
+        <h2 className="text-5xl md:text-7xl font-bold text-center tracking-tight drop-shadow-[0_2px_24px_rgba(0,0,0,0.6)]">
+          <span className="text-white">Three agents.</span>
+          <br />
+          <span className="text-[#4CAF50]">One perfect meal.</span>
+        </h2>
+      </motion.div>
+    </>
   );
 }
 
@@ -354,11 +376,15 @@ export function ScrollNarrativeLanding() {
         count++;
         setLoaded(count);
         if (i === 0 && canvasRef.current) {
-          const ctx = canvasRef.current.getContext("2d");
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext("2d");
           if (ctx) {
-            canvasRef.current.width = img.naturalWidth;
-            canvasRef.current.height = img.naturalHeight;
-            ctx.drawImage(img, 0, 0);
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = Math.round(rect.width * dpr);
+            canvas.height = Math.round(rect.height * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.drawImage(img, 0, 0, rect.width, rect.height);
           }
         }
       };
@@ -382,9 +408,17 @@ export function ScrollNarrativeLanding() {
       rafId = requestAnimationFrame(() => {
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
-        if (canvas.width !== img.naturalWidth) canvas.width = img.naturalWidth;
-        if (canvas.height !== img.naturalHeight) canvas.height = img.naturalHeight;
-        ctx.drawImage(img, 0, 0);
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const targetW = Math.round(rect.width * dpr);
+        const targetH = Math.round(rect.height * dpr);
+        if (canvas.width !== targetW || canvas.height !== targetH) {
+          canvas.width = targetW;
+          canvas.height = targetH;
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, rect.width, rect.height);
+        ctx.drawImage(img, 0, 0, rect.width, rect.height);
       });
     });
     return () => {

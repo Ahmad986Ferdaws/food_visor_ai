@@ -24,8 +24,9 @@ pydantic[email]>=2.10.0
 pydantic-settings>=2.7.0
 python-dotenv>=1.0.1
 
-# HTTP client (for embedding/LLM APIs)
+# HTTP client (used elsewhere in the codebase)
 httpx>=0.28.0
 
-# LLM SDK (install as needed)
-# anthropic>=0.40.0
+# LLM SDKs
+anthropic>=0.40.0
+openai>=1.0.0
